@@ -1,0 +1,21 @@
+services:
+  server-dashboard:
+    build: .
+    image: server-dashboard:latest
+    container_name: server-dashboard
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+      - /etc/os-release:/host/os-release:ro
+    networks: [coolify]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.server-dashboard.rule=Host(`health.kodethat.com`)
+      - traefik.http.routers.server-dashboard.entrypoints=http
+      - traefik.http.services.server-dashboard.loadbalancer.server.port=3000
+
+networks:
+  coolify:
+    external: true

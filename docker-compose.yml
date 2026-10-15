@@ -1,21 +1,14 @@
+# Deployed via Coolify (Docker Compose build pack). Set the domain in Coolify as
+# http://health.kodethat.com:3000 — Coolify adds the Traefik labels and network itself.
 services:
   server-dashboard:
     build: .
-    image: server-dashboard:latest
-    container_name: server-dashboard
     restart: unless-stopped
+    expose:
+      - "3000"
     volumes:
+      # Read-only host views so the dashboard reports the host, not the container.
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/host/root:ro
       - /etc/os-release:/host/os-release:ro
-    networks: [coolify]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.server-dashboard.rule=Host(`health.kodethat.com`)
-      - traefik.http.routers.server-dashboard.entrypoints=http
-      - traefik.http.services.server-dashboard.loadbalancer.server.port=3000
-
-networks:
-  coolify:
-    external: true
